@@ -1,0 +1,6 @@
+{
+	"name": "{{ APPNAME }}",
+	"spot" : true,
+	"verbose" : false,
+	"watch" : true
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <link rel="stylesheet" href="http://staticsports.pplive.cn/2016/interim/app/{{ APPNAME }}/static/v_20170103100856/css/index.pack.css">
+</head>
+
+<body>
+    <h1> Hello, {{ APPNAME }}</h1>
+    <script>
+    // 该脚本在Aplus中作为一个全局页面碎片配置 碎片ID ae9a67152d0348112419cfb82f1d0cc7
+    var widgets = (function() {var FP = Function.prototype, AP = Array.prototype, slice = String.prototype.slice, toString = Object.prototype.toString; var header = document.getElementsByTagName("head")[0]; var noop = function() {}; var snippets; return snippets = {loader: (function() {return {"w3c": function(src, cb) {var script = document.createElement("script"); cb = cb || function() {}; script.onload = function() {cb() }; script.src = src; header.appendChild(script) }, "poorBrowser": function(src, cb) {var script = document.createElement("script"); cb = cb || function() {}; script.onreadystatechange = function() {if (this.readyState == "loaded" || this.readyState == "complete") {cb(); this.onreadystatechange = null } }; script.src = src; header.appendChild(script) } }[document.createElement("script").readyState ? "poorBrowser" : "w3c"] })(), callbacks: {list: [], fired: false, add: function(fn) {this.list = this.list || []; this.list.push(fn); if (this.fired) {this.fire(); return } }, remove: function(fn) {var index, list = this.list; if (list) {for (var i = 0, len = list.len; i < len; i++) {if (fn === list[i]) {index = i } } list.splice(index, 1) } }, fire: function(args, context) {var list = this.list; for (var i = 0, len = list.length; i < len; i++) {list[i].call(context, args) } this.list = []; this.fired = true } }, type: function(obj) {return toString.call(obj).replace(/(?:\[object\s+)|(?:\])/gi, "").toLowerCase() }, merge: function(target, source) {for (var p in source) {if (this.type(source[p]) == "object") {target[p] = {}; this.merge(target[p], source[p]) } else {target[p] = source[p] } } return target }, log: (function() {if (window["console"] && console.log) {var _log = function() {var args = [].slice.call(arguments); snippets.forEach(args, function(value, i, arr) {console.log(args[i]) }) }; if (window["console"] && console.log) {if (typeof Function.prototype.bind === "function") {return typeof console.log === "object" ? _log : console.log.bind(console) } else {return _log } } } return noop })(), forEach: AP.forEach ? function(arr, fn) {arr.forEach(fn) } : function(arr, fn) {var item, i = 0; while (item = arr[i]) {fn(item, i, arr); i++ } } } })();
+    // 公用版本号配置
+    var ppSportsCommonVers = {
+        // 三个pack文件版本号
+        packs: "v_20161130193007",
+        // 静态类库版本号
+        lib: "v_20161130193058",
+        // 配置文件版本号
+        conf: "v_20161202102901"
+    };
+    </script>
+    <script src="http://staticsports.pplive.cn/old/seajs/v_20160920112006/2.2.0/sea.js"></script>
+    <script>
+    var ppSportsWebConfig = {
+        // static 为当前业务静态资源版本号
+        vers: widgets.merge(window['ppSportsCommonVers'] || {}, {
+            static: "v_20170103100856"
+        }),
+        base: "http://staticsports.pplive.cn/2016/interim",
+        staticDir: 'static/js/',
+        isPkg: true,
+        framePkg: (function() {
+            try {
+                return parent.location.href.slice(-16) === "--whoisyourdaddy" || !parent.ppSportsWebConfig.isPkg
+            } catch (ex) {
+                return false;
+            }
+        })()
+    };
+
+    seajs.config({
+        "base": ppSportsWebConfig.base
+    });
+
+    if (!ppSportsWebConfig.isPkg || location.href.slice(-16) === "--whoisyourdaddy" || ppSportsWebConfig.framePkg) {
+        ppSportsWebConfig.staticDir = 'src/js/';
+        widgets.loader([ppSportsWebConfig.base, 'confs', ppSportsWebConfig.vers.conf, 'alias.js'].join('/'), function() {
+            widgets.callbacks.fire();
+        })
+        widgets.log('当前为调试模式');
+    } else {
+        seajs.config({
+            alias: {
+                'utils-pack': 'packs/utils-pack',
+                'ui-pack': 'packs/ui-pack',
+                'pub-pack': 'packs/pub-pack'
+            },
+            map: [
+                [new RegExp('(static\\/)(?!v_\\d+)'), "$1" + ppSportsWebConfig.vers.static + "/"],
+                [new RegExp('(packs\\/)(?!v_\\d+)'), "$1" + ppSportsWebConfig.vers.packs + "/"],
+                [new RegExp('(\\/lib\\/)(?!v_\\d+)'), "$1" + ppSportsWebConfig.vers.lib + '/']
+            ]
+        })
+        seajs.use(['utils-pack', 'pub-pack', 'ui-pack'], function() {
+            widgets.loader([ppSportsWebConfig.base, 'confs', ppSportsWebConfig.vers.conf, 'alias.js'].join('/'), function() {
+                widgets.callbacks.fire();
+            })
+        })
+    }
+    </script>
+    <script>
+    widgets.callbacks.add(function() {
+        seajs.use(ppSportsWebConfig.base + "/app/{{ APPNAME }}/" + ppSportsWebConfig.staticDir + "index.js");
+    })
+    </script>
+</body>
+
+</html>
